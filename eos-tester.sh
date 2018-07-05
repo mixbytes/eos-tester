@@ -42,9 +42,15 @@ stop_eos() {
     sudo $EOSDEV_INSTALL_DIR/scripts/reset_local_chain.sh
 }
 
+error() {
+    stop_eos
+    die $1
+}
 
 compile_contract() {
-    $EOSDEV_INSTALL_DIR/scripts/compile.sh $1 build/
+    if ! $EOSDEV_INSTALL_DIR/scripts/compile.sh $1 build/ ; then
+        error
+    fi
 }
 
 compile_contracts() {
