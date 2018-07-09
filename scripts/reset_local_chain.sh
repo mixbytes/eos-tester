@@ -8,8 +8,6 @@ set -o pipefail
 
 BIN_DIR="$(cd $(dirname $0) && pwd)"
 
-. "$BIN_DIR/_local_chain.incl.sh"
+. "$INSTALL_DIR/scripts/stop_local_chain.sh" &>/dev/null || true
 
-"$BIN_DIR/stop_local_chain.sh" &>/dev/null || true
-
-rm -rf "$EOS_DIR"
+sudo rm -rf "$EOS_DIR"

@@ -5,11 +5,6 @@
 
 set -o pipefail
 
-BIN_DIR="$(cd $(dirname $0) && pwd)"
-
-. "$BIN_DIR/_local_chain.incl.sh"
-
-
 [[ $# -eq 2 ]] || die "usage: $0 contract_cpp output_dir"
 
 CONTRACT_CPP="$1"

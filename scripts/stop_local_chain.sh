@@ -5,15 +5,10 @@
 
 set -o pipefail
 
-BIN_DIR="$(cd $(dirname $0) && pwd)"
-
-. "$BIN_DIR/_local_chain.incl.sh"
-
-
-$EOS_DOCKER stop keosd >> $LOGS_FILE 2>&1
+$EOS_DOCKER stop $(cat $KEOSD_CID) >> $LOGS_FILE 2>&1
 echo "keosd stoped"
 
-$EOS_DOCKER stop nodeos >> $LOGS_FILE 2>&1
+$EOS_DOCKER stop $(cat $NODEOS_CID) >> $LOGS_FILE 2>&1
 echo "nodeos stoped"
 
 if [[ "$EOS_NETWORK" != "host" ]]; then

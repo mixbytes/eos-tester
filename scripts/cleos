@@ -3,11 +3,6 @@
 set -eu
 set -o pipefail
 
-BIN_DIR="$(cd $(dirname $0) && pwd)"
-
-. "$BIN_DIR/_local_chain.incl.sh"
-
-
 mkdir -p "$MOUNT_DIR"
 
 set +u

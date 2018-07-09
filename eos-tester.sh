@@ -3,9 +3,14 @@
 set -o pipefail
 set +x
 
-EOSDEV_INSTALL_DIR="/opt/eos-dev"
+INSTALL_DIR="/opt/eos-tester"
 
-. $EOSDEV_INSTALL_DIR/scripts/_local_chain.incl.sh
+EOS_DEV_DIR="$PWD/.eos-dev"
+EOS_DIR="$EOS_DEV_DIR/.blockchain"
+NODEOS_PORT=3413
+KEOSD_PORT=3414
+
+. $INSTALL_DIR/scripts/_local_chain.incl.sh
 
 init_containers() {
     docker pull eosio/eos-dev > /dev/null 2>&1
@@ -33,13 +38,15 @@ init() {
 }
 
 start_eos() {
-    sudo $EOSDEV_INSTALL_DIR/scripts/reset_local_chain.sh
-    $EOSDEV_INSTALL_DIR/scripts/start_local_chain.sh
+    . $INSTALL_DIR/scripts/start_local_chain.sh
 }
 
 stop_eos() {
-    $EOSDEV_INSTALL_DIR/scripts/stop_local_chain.sh
-    sudo $EOSDEV_INSTALL_DIR/scripts/reset_local_chain.sh
+    . "$INSTALL_DIR/scripts/stop_local_chain.sh"
+}
+
+reset_eos() {
+    . "$INSTALL_DIR/scripts/reset_local_chain.sh"
 }
 
 error() {
@@ -48,7 +55,7 @@ error() {
 }
 
 compile_contract() {
-    if ! $EOSDEV_INSTALL_DIR/scripts/compile.sh $1 build/ ; then
+    if ! . $INSTALL_DIR/scripts/compile.sh $1 build/ ; then
         error
     fi
 }
@@ -96,7 +103,7 @@ load_test_params() {
 }
 
 init_tests() {
-    cp -r $EOSDEV_INSTALL_DIR/scripts/skeleton/test/* test/
+    cp -r $INSTALL_DIR/scripts/skeleton/test/* test/
 
     load_test_params
 
@@ -108,7 +115,7 @@ init_tests() {
 }
 
 save_nodeos_logs() {
-    docker logs --tail 1000 $(cat $NODEEOS_CID) &> $LOGS_DIR/nodeos.log &2>1
+    docker logs --tail 1000 $(cat $NODEOS_CID) &> $LOGS_DIR/nodeos.log &2>1
     echo "nodeos logs saved, can see here $LOGS_DIR/nodeos.log"
 }
 
@@ -133,24 +140,128 @@ clear_all() {
 }
 
 
-if [ $1 == "init" ]; then
-    if [ ! $2 ]; then
-        die "usage: eos-dev init project_name"
-    fi
-    init $2
-    init_tests
-elif [ $1 == "test" ]; then
+com_run_test() {
     check_init
     start_eos
     compile_contracts
     run_tests
     stop_eos
-elif [ $1 == "compile" ]; then
+}
+
+com_node_start() {
+    if [ $# -ge 3 ]; then
+        NODEOS_PORT=$1
+        KEOSD_PORT=$2
+        EOS_DIR=$3
+        EOS_DEV_DIR=$EOS_DIR
+
+        . $INSTALL_DIR/scripts/_local_chain.incl.sh
+        create_dir "$LOGS_DIR"
+
+        start_eos
+    else
+        die "usage: eos-tester node start <nodeos port> <keosd port> <eos data dir>"
+    fi
+}
+
+com_node_stop() {
+    if [ $# -ge 1 ]; then
+        EOS_DIR=$1
+        EOS_DEV_DIR=$EOS_DIR
+        . $INSTALL_DIR/scripts/_local_chain.incl.sh
+
+        stop_eos
+    else
+        die "usage: eos-tester node stop <eos data dir>"
+    fi
+}
+
+com_node() {
+    if [ $# -lt 1 ]; then
+        die "usage: eos-tester node <start|stop>"
+    elif [ $1 == "start" ]; then
+        shift
+        com_node_start $@
+    elif [ $1 == "stop" ]; then
+        shift
+        com_node_stop $@
+    else
+        die "usage: eos-tester node <start|stop>"
+    fi
+}
+
+com_test_init() {
+    init_tests
+}
+
+com_test_run() {
+    check_init
+    start_eos
+    compile_contracts
+    run_tests
+    stop_eos
+    reset_eos
+}
+
+com_test() {
+    if [ $# -lt 1 ]; then
+        die "usage: eos-tester test <init|run>"
+    elif [ $1 == "run" ]; then
+        shift
+        com_test_run $@
+    elif [ $1 == "init" ]; then
+        shift
+        com_test_init $@
+    else
+        die "usage: eos-tester test <init|run>"
+    fi
+}
+
+com_compile() {
     check_init
     compile_contracts
-elif [ $1 == "clear" ]; then
+}
+
+com_clear() {
     clear_all
-else
-    printf "usage: %s \\n   init       initalize eos-dev\\n   compile    compile contracts\\n   test       run tests\\n   clear      clear all data\\n"
+}
+
+com_init() {
+    if [ $# -lt 1 ]; then
+        die "usage: eos-tester init <project_name>"
+    fi
+
+    init
+    init_tests
+}
+
+usage() {
+    printf "Usage:\\n \
+                init       initalize eos-dev\\n \
+                compile    compile contracts\\n \
+                test       test commands\\n \
+                clear      clear all data\\n \
+                node       start, stop custom node\\n"
     exit 1
+}
+
+if [ $# -lt 1 ]; then
+    usage
+elif [ $1 == "init" ]; then
+    shift
+    com_init $@
+elif [ $1 == "test" ]; then
+    shift
+    com_test $@
+elif [ $1 == "compile" ]; then
+    shift
+    com_compile $@
+elif [ $1 == "clear" ]; then
+    shift
+    com_clear $@
+elif [ $1 == "node" ]; then
+    shift
+    com_node $@
+else
+    usage
 fi
