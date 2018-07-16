@@ -3,17 +3,7 @@
 set -eu
 set -o pipefail
 
-mkdir -p "$MOUNT_DIR"
-
-set +u
-if [[ -z "$NODE_URL" ]]; then
-    NODE_URL="http://127.0.0.1:$NODEOS_PORT/"
-fi
-set -u
-
 $EOS_DOCKER run --rm --network "$EOS_NETWORK" \
-    -v "$MOUNT_DIR":/mounted \
+    -v $PWD:/host:ro \
     eosio/eos-dev /opt/eosio/bin/cleos \
-    -u "$NODE_URL" \
-    --wallet-url http://127.0.0.1:"$KEOSD_PORT"/ \
     "$@"

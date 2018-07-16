@@ -139,7 +139,6 @@ clear_all() {
     echo "all data cleared"
 }
 
-
 com_run_test() {
     check_init
     start_eos
@@ -235,6 +234,19 @@ com_init() {
     init_tests
 }
 
+com_cleos() {
+    if [ $# -lt 1 ]; then
+        die "usage: eos-tester cleos <data_dir> ...args"
+    fi
+
+    EOS_DIR=$1
+    EOS_DEV_DIR=$EOS_DIR
+    . $INSTALL_DIR/scripts/_local_chain.incl.sh
+
+    shift
+    . $INSTALL_DIR/scripts/cleos $@
+}
+
 usage() {
     printf "Usage:\\n \
                 init       initalize eos-dev\\n \
@@ -262,6 +274,9 @@ elif [ $1 == "clear" ]; then
 elif [ $1 == "node" ]; then
     shift
     com_node $@
+elif [ $1 == "cleos" ]; then
+    shift
+    com_cleos $@
 else
     usage
 fi
