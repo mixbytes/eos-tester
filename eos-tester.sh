@@ -63,12 +63,21 @@ compile_contract() {
 compile_contracts() {
     CONTRACTS_DIR="contracts"
 
-    for f in $CONTRACTS_DIR/*.cpp; do
-        if [ -e $f ]; then
-            echo "compiling $f ...";
-            compile_contract $f
+    if [ $# -gt 0 ]; then
+        if [ -e "$PWD/$1" ]; then
+            echo "compiling "$PWD/$1" ...";
+            compile_contract "$PWD/$1"
+        else
+            echo "contract $1 not found";
         fi
-    done
+    else
+        for f in $CONTRACTS_DIR/*.cpp; do
+            if [ -e $f ]; then
+                echo "compiling $f ...";
+                compile_contract $f
+            fi
+        done
+    fi
 }
 
 load_test_params() {
@@ -218,7 +227,7 @@ com_test() {
 
 com_compile() {
     check_init
-    compile_contracts
+    compile_contracts $@
 }
 
 com_clear() {
