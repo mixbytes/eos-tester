@@ -3,7 +3,7 @@
 set -eu
 set -o pipefail
 
-$EOS_DOCKER run --rm --network "$EOS_NETWORK" \
+$EOS_DOCKER run --rm --network "host" \
     -v $PWD:/host:ro \
-    eosio/eos-dev /opt/eosio/bin/cleos \
+    "$EOS_IMAGE" /opt/eosio/bin/cleos \
     "$@"

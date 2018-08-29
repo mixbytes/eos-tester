@@ -20,7 +20,7 @@ CONTRACT_HPP_BASENAME="$CONTRACT_NAME.hpp"
 
 
 $EOS_DOCKER run --rm -v "$CONTRACT_DIR":/input -v "$OUTPUT_DIR":/output \
-    eosio/eos-dev /opt/eosio/tools/eosiocpp \
+    "$EOS_IMAGE" /opt/eosio/tools/eosiocpp \
     -o /output/"$CONTRACT_NAME.wast" /input/"$CONTRACT_CPP_BASENAME" >$LOGS_DIR/compile.log 2>&1
 
 if grep -q -i "ERROR" $LOGS_DIR/compile.log; then
@@ -30,7 +30,7 @@ fi
 ABI_SOURCE="$CONTRACT_CPP_BASENAME"
 
 $EOS_DOCKER run --rm -v "$CONTRACT_DIR":/input -v "$OUTPUT_DIR":/output \
-    eosio/eos-dev /opt/eosio/tools/eosiocpp \
+    "$EOS_IMAGE" /opt/eosio/tools/eosiocpp \
     -g /output/"$CONTRACT_NAME.abi" /input/"$ABI_SOURCE" >$LOGS_DIR/compile.log 2>&1
 
 if grep -q -i "ERROR" $LOGS_DIR/compile.log; then

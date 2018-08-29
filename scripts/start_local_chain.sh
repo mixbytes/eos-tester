@@ -13,28 +13,33 @@ mkdir -p "$KEOSD_DATA"
 
 set +x
 
-if [[ "$EOS_NETWORK" != "host" ]]; then
-    $EOS_DOCKER network create "$EOS_NETWORK" >> $LOGS_FILE 2>&1
-fi
+#if [[ "$EOS_NETWORK" != "host" ]]; then
+#    $EOS_DOCKER network create "$EOS_NETWORK" >> $LOGS_FILE 2>&1
+#fi
 
-$EOS_DOCKER run --rm -d --network "$EOS_NETWORK" --name nodeos -v "$NODEOS_DATA":/data \
-    eosio/eos-dev /opt/eosio/bin/nodeos \
+$EOS_DOCKER run --rm -d -v "$NODEOS_DATA":/data \
+    -p "$NODEOS_PORT":"8888/tcp" \
+    -p "$NODEOS_PORT":"8888/udp" \
+    "$EOS_IMAGE" /opt/eosio/bin/nodeos \
     -d /data \
-    --http-server-address=127.0.0.1:"$NODEOS_PORT" \
+    --http-server-address=0.0.0.0:"8888" \
+    --http-validate-host=false \
     -e -p eosio --plugin eosio::chain_api_plugin --plugin eosio::history_api_plugin --contracts-console \
     > $NODEOS_CID 2>&1
 
 echo "nodeos started"
 
-$EOS_DOCKER run --rm -d --network "$EOS_NETWORK" --name keosd -v "$KEOSD_DATA":/data \
-    eosio/eos-dev /opt/eosio/bin/keosd \
+$EOS_DOCKER run --rm -d -v "$KEOSD_DATA":/data \
+    -p "$KEOSD_PORT":"9999/tcp" \
+    -p "$KEOSD_PORT":"9999/udp" \
+    "$EOS_IMAGE" /opt/eosio/bin/keosd \
     -d /data \
-    --http-server-address=127.0.0.1:"$KEOSD_PORT" \
+    --http-server-address=0.0.0.0:"9999" \
+    --http-validate-host=false \
     --unlock-timeout=1000000000 \
     > $KEOSD_CID 2>&1
 
 echo "keosd started"
-
 
 
 . "$INSTALL_DIR/scripts/cleos" -u "http://127.0.0.1:$NODEOS_PORT" --wallet-url "http://127.0.0.1:$KEOSD_PORT" \

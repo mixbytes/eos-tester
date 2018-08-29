@@ -244,15 +244,8 @@ com_init() {
 }
 
 com_cleos() {
-    if [ $# -lt 1 ]; then
-        die "usage: eos-tester cleos <data_dir> ...args"
-    fi
-
-    EOS_DIR=$1
-    EOS_DEV_DIR=$EOS_DIR
     . $INSTALL_DIR/scripts/_local_chain.incl.sh
 
-    shift
     . $INSTALL_DIR/scripts/cleos $@
 }
 
