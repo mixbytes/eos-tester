@@ -13,7 +13,7 @@ KEOSD_PORT=3414
 . $INSTALL_DIR/scripts/_local_chain.incl.sh
 
 init_containers() {
-    docker pull eosio/eos-dev > /dev/null 2>&1
+    docker pull $EOS_IMAGE
     echo "containers inited"
 }
 

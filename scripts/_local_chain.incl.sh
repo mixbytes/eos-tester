@@ -18,7 +18,7 @@ MOUNT_DIR="$EOS_DIR/docker-mount"
 
 EOS_PUB_KEY_FILE="$EOS_DIR/pubkey"
 
-EOS_IMAGE="eosio/eos-dev:v1.1.0"
+EOS_IMAGE="eosio/eos-dev:v1.3.0"
 
 
 die() {
