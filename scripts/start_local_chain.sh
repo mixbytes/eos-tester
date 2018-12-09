@@ -43,7 +43,13 @@ echo "keosd started"
 
 
 . "$INSTALL_DIR/scripts/cleos" -u "http://127.0.0.1:$NODEOS_PORT" --wallet-url "http://127.0.0.1:$KEOSD_PORT" \
-wallet create >> $LOGS_FILE 2>&1
+wallet create --to-console | grep -Po 'PW[A-z0-9]*' > $KEOSD_DATA/passwd
+
+. "$INSTALL_DIR/scripts/cleos" -u "http://127.0.0.1:$NODEOS_PORT" --wallet-url "http://127.0.0.1:$KEOSD_PORT" \
+wallet open >> $LOGS_FILE 2>&1
+
+. "$INSTALL_DIR/scripts/cleos" -u "http://127.0.0.1:$NODEOS_PORT" --wallet-url "http://127.0.0.1:$KEOSD_PORT" \
+wallet unlock --password $(cat $KEOSD_DATA/passwd) >> $LOGS_FILE 2>&1
 
 . "$INSTALL_DIR/scripts/cleos" -u "http://127.0.0.1:$NODEOS_PORT" --wallet-url "http://127.0.0.1:$KEOSD_PORT" \
 wallet import --private-key 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3 >> $LOGS_FILE 2>&1
