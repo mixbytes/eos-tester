@@ -7,7 +7,6 @@
     "binaryen": "^48.0.0",
     "chai": "^4.1.2",
     "eosjs": "^15.0.0",
-    "ethereumjs-util": "^5.2.0",
     "fs": "0.0.1-security",
     "mocha": "^5.2.0",
     "to-snake-case": "^1.0.0"

@@ -100,7 +100,7 @@ load_test_params() {
     for f in ../contracts/*.cpp; do
         if [ -e $f ]; then
             n=$( echo $f | sed -e "s/.cpp//" | awk -F"/" '{print $3}' )
-            contracts=',\n'"\"contract_$n\": 1"
+            contracts=$contracts',\n'"\"contract_$n\": 1"
         fi
     done
 
