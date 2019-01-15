@@ -55,7 +55,7 @@ error() {
 }
 
 compile_contract() {
-    if ! . $INSTALL_DIR/scripts/compile.sh $1 build/ ; then
+    if ! . $INSTALL_DIR/scripts/compile.sh $1 build/ $2 ; then
         error
     fi
 }
@@ -63,10 +63,10 @@ compile_contract() {
 compile_contracts() {
     CONTRACTS_DIR="contracts"
 
-    if [ $# -gt 0 ]; then
+    if [[ $# -gt 0 ]] && [[ $1 != "--with-abi" ]]; then
         if [ -e "$PWD/$1" ]; then
             echo "compiling "$PWD/$1" ...";
-            compile_contract "$PWD/$1"
+            compile_contract "$PWD/$1" $2
         else
             echo "contract $1 not found";
         fi
@@ -74,7 +74,7 @@ compile_contracts() {
         for f in $CONTRACTS_DIR/*.cpp; do
             if [ -e $f ]; then
                 echo "compiling $f ...";
-                compile_contract $f
+                compile_contract $f $1
             fi
         done
     fi

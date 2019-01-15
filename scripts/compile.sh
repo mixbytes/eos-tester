@@ -5,7 +5,7 @@
 
 set -o pipefail
 
-[[ $# -eq 2 ]] || die "usage: $0 contract_cpp output_dir"
+[[ $# -gt 1 ]] || die "usage: $0 contract_cpp output_dir [--with-abi]"
 
 CONTRACT_CPP="$1"
 OUTPUT_DIR="$(cd "$2" && pwd)"
@@ -27,12 +27,14 @@ if grep -q -i "ERROR" $LOGS_DIR/compile.log; then
     die "compile wast error, see $LOGS_DIR/compile.log for more details";
 fi
 
-ABI_SOURCE="$CONTRACT_CPP_BASENAME"
+if [[ $3 == "--with-abi" ]]; then
+    ABI_SOURCE="$CONTRACT_CPP_BASENAME"
 
-$EOS_DOCKER run --rm -v "$CONTRACT_DIR":/input -v "$OUTPUT_DIR":/output \
-    "$EOS_IMAGE" /opt/eosio/tools/eosiocpp \
-    -g /output/"$CONTRACT_NAME.abi" /input/"$ABI_SOURCE" >$LOGS_DIR/compile.log 2>&1
+    $EOS_DOCKER run --rm -v "$CONTRACT_DIR":/input -v "$OUTPUT_DIR":/output \
+        "$EOS_IMAGE" /opt/eosio/tools/eosiocpp \
+        -g /output/"$CONTRACT_NAME.abi" /input/"$ABI_SOURCE" >$LOGS_DIR/compile.log 2>&1
 
-if grep -q -i "ERROR" $LOGS_DIR/compile.log; then
-    die "generate abi error, see $LOGS_DIR/compile.log for more details";
+    if grep -q -i "ERROR" $LOGS_DIR/compile.log; then
+        die "generate abi error, see $LOGS_DIR/compile.log for more details";
+    fi
 fi
