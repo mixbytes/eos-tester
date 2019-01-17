@@ -1,0 +1,10 @@
+{
+  "name": "eos-test-helper",
+  "version": "0.0.1",
+  "dependencies": {
+    "eosjs": "16.0.9",
+    "fs": "0.0.1-security"
+  },
+  "scripts": {
+  }
+}

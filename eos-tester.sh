@@ -6,7 +6,7 @@ set +x
 INSTALL_DIR="/opt/eos-tester"
 
 EOS_DEV_DIR="$PWD/.eos-dev"
-EOS_DIR="$EOS_DEV_DIR/.blockchain"
+EOS_DIR="$EOS_DEV_DIR"
 NODEOS_PORT=3413
 KEOSD_PORT=3414
 
@@ -112,7 +112,7 @@ load_test_params() {
 }
 
 init_tests() {
-    cp -r $INSTALL_DIR/scripts/skeleton/test/* test/
+    cp -r $INSTALL_DIR/scripts/skeleton/* .
 
     load_test_params
 
@@ -146,14 +146,6 @@ check_init() {
 clear_all() {
     rm -rf $EOS_DEV_DIR
     echo "all data cleared"
-}
-
-com_run_test() {
-    check_init
-    start_eos
-    compile_contracts
-    run_tests
-    stop_eos
 }
 
 com_node_start() {
@@ -203,9 +195,10 @@ com_test_init() {
 }
 
 com_test_run() {
-    check_init
+    #check_init
+    init
     start_eos
-    compile_contracts
+    #compile_contracts
     run_tests
     stop_eos
     reset_eos

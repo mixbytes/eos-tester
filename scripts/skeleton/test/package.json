@@ -4,17 +4,10 @@
   "dependencies": {
     "argparse": "^1.0.10",
     "axios": "^0.18.0",
-    "binaryen": "^48.0.0",
     "chai": "^4.1.2",
-    "eosjs": "^15.0.0",
-    "fs": "0.0.1-security",
     "mocha": "^5.2.0",
-    "to-snake-case": "^1.0.0"
-  },
-  "config": {
-    "eosioKey": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3",
-    "http": "@http@",
-    "chainId": "@chain_id@"@contracts@
+    "to-snake-case": "^1.0.0",
+    "eos-test-helper": "file:../libs/eos-test-helper"
   },
   "scripts": {
     "start": "node node_modules/mocha/bin/mocha ."
