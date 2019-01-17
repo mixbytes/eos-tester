@@ -5,19 +5,12 @@
 
 set -o pipefail
 
-BIN_DIR="$(cd $(dirname $0) && pwd)"
-
 mkdir -p "$EOS_DIR"
 mkdir -p "$NODEOS_DATA"
 mkdir -p "$KEOSD_DATA"
 
 set +x
 
-#if [[ "$EOS_NETWORK" != "host" ]]; then
-#    $EOS_DOCKER network create "$EOS_NETWORK" >> $LOGS_FILE 2>&1
-#fi
-
-#    -v "$NODEOS_DATA":/data \
 $EOS_DOCKER run --rm -d \
     -p "$NODEOS_PORT":"8888/tcp" \
     -p "$NODEOS_PORT":"8888/udp" \
@@ -35,8 +28,6 @@ else
     exit 1;
 fi
 
-#    -v "$KEOSD_DATA":/data \
-#    -d /data \
 $EOS_DOCKER run  -d \
     -p "$KEOSD_PORT":"9999/tcp" \
     -p "$KEOSD_PORT":"9999/udp" \

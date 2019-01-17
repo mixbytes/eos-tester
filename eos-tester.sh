@@ -35,8 +35,6 @@ init() {
     create_dir "$LOGS_DIR"
 
     echo "" > $LOGS_FILE
-
-    echo "$1" > $PROJECT_NAME_FILE
 }
 
 start_eos() {
@@ -83,8 +81,8 @@ compile_contracts() {
 }
 
 init_tests() {
-    cp -r $INSTALL_DIR/scripts/skeleton/test .
-    cp -r $INSTALL_DIR/scripts/skeleton/.libs .
+    cp -rn $INSTALL_DIR/scripts/skeleton/test .
+    cp -rn $INSTALL_DIR/scripts/skeleton/.libs .
 
     cd test
     npm i >> $LOGS_FILE 2>&1
@@ -94,8 +92,8 @@ init_tests() {
 }
 
 save_nodeos_logs() {
-    docker logs --tail 1000 $(cat $NODEOS_CID) &> nodeos.log &2>1
-    echo "nodeos logs saved, can see here $LOGS_DIR/nodeos.log"
+    docker logs --tail 1000 $(cat $NODEOS_CID) &> nodeos.log &2>&1
+    echo "nodeos logs saved, can see here $PWD/nodeos.log"
 }
 
 run_tests() {

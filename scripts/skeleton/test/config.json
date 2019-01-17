@@ -1,0 +1,18 @@
+{
+    "network": {
+        "dev": {
+            "url": "http://localhost:3413",
+            "system_account": "eosio",
+            "default_key": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
+        },
+        "local": {
+            "url": "http://localhost:8888",
+            "system_account": "eosio",
+            "default_key": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
+        },
+        "jungle": {
+            "url": "http://dev.cryptolions.io:38888",
+            "system_account": "eosio"
+        }
+    }
+}
