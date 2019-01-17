@@ -24,7 +24,9 @@ create_dir() {
 }
 
 init() {
-    init_containers
+    if [[ $NETWORK == "dev" ]]; then
+        init_containers
+    fi
 
     create_dir "test"
     create_dir "build"
@@ -124,7 +126,7 @@ init_tests() {
 }
 
 save_nodeos_logs() {
-    docker logs --tail 1000 $(cat $NODEOS_CID) &> $LOGS_DIR/nodeos.log &2>1
+    docker logs --tail 1000 $(cat $NODEOS_CID) &> nodeos.log &2>1
     echo "nodeos logs saved, can see here $LOGS_DIR/nodeos.log"
 }
 
@@ -132,8 +134,13 @@ run_tests() {
     init_tests
     echo "running tests ..."
     cd test
-    npm start
-    save_nodeos_logs
+
+    TEST_DIR=$PWD NETWORK=$NETWORK npm start || true
+
+    if [[ $NETWORK == "dev" ]]; then
+        save_nodeos_logs
+    fi
+
     cd ..
 }
 
@@ -195,18 +202,29 @@ com_test_init() {
 }
 
 com_test_run() {
-    #check_init
     init
-    start_eos
-    #compile_contracts
+
+    if [ $# -eq 0 ]; then
+        NETWORK="dev"
+    else
+        NETWORK=$1
+    fi
+
+    if [[ $NETWORK == "dev" ]]; then
+        start_eos
+    fi
+
     run_tests
-    stop_eos
-    reset_eos
+
+    if [[ $NETWORK == "dev" ]]; then
+        stop_eos
+        reset_eos
+    fi
 }
 
 com_test() {
     if [ $# -lt 1 ]; then
-        die "usage: eos-tester test <init|run>"
+        die "usage: eos-tester test <init|run> [network]"
     elif [ $1 == "run" ]; then
         shift
         com_test_run $@

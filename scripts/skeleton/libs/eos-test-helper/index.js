@@ -9,18 +9,22 @@ const config = {
     sign: true
 };
 
-const NODE_URL = process.env.NODE_URL || 'http://localhost:8888';
-const DEFAULT_KEY = process.env.DEFAULT_KEY || '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3';
-const SYSTEM_ACCOUNT_NAME = process.env.SYSTEM_ACCOUNT_NAME || 'eosio';
+const TEST_DIR = process.env.TEST_DIR;
+
+const test_conf = require(TEST_DIR + '/config.json');
+const NETWORK_NAME = process.env.NETWORK || 'dev';
+
+const network = test_conf.network[NETWORK_NAME];
 
 const system_account = {
-    name: SYSTEM_ACCOUNT_NAME,
-    private_key: DEFAULT_KEY,
+    name: network.system_account,
+    private_key: network.default_key || '',
 };
 
 
 function api(keys = []) {
-    return Eos({...config, keyProvider: keys.concat(DEFAULT_KEY), httpEndpoint: NODE_URL});
+    keys = network.default_key ? keys.concat(network.default_key) : keys;
+    return Eos({...config, keyProvider: keys, httpEndpoint: network.url});
 }
 
 
@@ -59,7 +63,7 @@ function load_contract(dir, name) {
 
 
 async function deploy(deployer, contract) {
-    let system_contract = await api([deployer.private_key]).contract(SYSTEM_ACCOUNT_NAME);
+    let system_contract = await api([deployer.private_key]).contract(network.system_account);
 
     await system_contract.setcode(deployer.name, 0, 0, contract.wasm);
     await system_contract.setabi(deployer.name, contract.abi);
@@ -67,7 +71,7 @@ async function deploy(deployer, contract) {
 
 
 async function new_account(new_account, creator = system_account) {
-    let system_contract = await api([creator.private_key]).contract(SYSTEM_ACCOUNT_NAME);
+    let system_contract = await api([creator.private_key]).contract(network.system_account);
 
     await system_contract.newaccount({
         creator: creator.name,

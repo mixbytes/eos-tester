@@ -10,4 +10,4 @@ BIN_DIR="$(cd $(dirname $0) && pwd)"
 
 . "$INSTALL_DIR/scripts/stop_local_chain.sh" &>/dev/null || true
 
-sudo rm -rf "$EOS_DIR"
+rm -rf "$EOS_DIR"
