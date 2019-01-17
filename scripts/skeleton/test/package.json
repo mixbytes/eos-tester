@@ -1,5 +1,5 @@
 {
-  "name": "@name@",
+  "name": "tests",
   "version": "0.0.1",
   "dependencies": {
     "argparse": "^1.0.10",
@@ -7,7 +7,7 @@
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
     "to-snake-case": "^1.0.0",
-    "eos-test-helper": "file:../libs/eos-test-helper"
+    "eos-test-helper": "file:../.libs/eos-test-helper"
   },
   "scripts": {
     "start": "node node_modules/mocha/bin/mocha ."

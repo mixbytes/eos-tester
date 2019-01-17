@@ -82,41 +82,9 @@ compile_contracts() {
     fi
 }
 
-load_test_params() {
-    chain_id=$(curl -s -i http://localhost:$NODEOS_PORT/v1/chain/get_info | grep -Po '"chain_id":".*?"' | awk -F"\"" '{print $4}')
-    http="http:\/\/localhost:$NODEOS_PORT"
-    name=$( cat $PROJECT_NAME_FILE )
-
-    cd test
-
-    cat package.json | sed -e "s/@name@/$name-tests/" > .package.json
-    cat .package.json > package.json
-
-    cat package.json | sed -e "s/@chain_id@/$chain_id/" > .package.json
-    cat .package.json > package.json
-
-    cat package.json | sed -e "s/@http@/$http/" > .package.json
-    cat .package.json > package.json
-
-    contracts=""
-    for f in ../contracts/*.cpp; do
-        if [ -e $f ]; then
-            n=$( echo $f | sed -e "s/.cpp//" | awk -F"/" '{print $3}' )
-            contracts=$contracts',\n'"\"contract_$n\": 1"
-        fi
-    done
-
-    cat package.json | sed -e "s/@contracts@/$contracts/" > .package.json
-    cat .package.json > package.json
-
-    rm .package.json
-    cd ..
-}
-
 init_tests() {
-    cp -r $INSTALL_DIR/scripts/skeleton/* .
-
-    load_test_params
+    cp -r $INSTALL_DIR/scripts/skeleton/test .
+    cp -r $INSTALL_DIR/scripts/skeleton/.libs .
 
     cd test
     npm i >> $LOGS_FILE 2>&1
@@ -146,7 +114,7 @@ run_tests() {
 
 check_init() {
     if [ ! -d $EOS_DEV_DIR ]; then
-        die "first run 'eos-dev init' in current directory"
+        die "run 'eos-dev init' in current directory"
     fi
 }
 
